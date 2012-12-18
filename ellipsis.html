@@ -1,0 +1,88 @@
+<html>
+<head>
+<style>
+  .readmore, .readless {text-decoration: none; color: grey; text-align: right; margin: 10px; }
+</style>
+</head>
+<body>
+<div class="textWrapper">
+I've got.... lots   ---  I'm talkin' lots of..... "bad" break-points 
+</div>
+</body>
+<script>
+
+var toggleDefaults = ['.readMore', '.ellipsis', '.readless', '.cutSection'];
+var textWrapper = document.querySelector('.textWrapper');
+var fullText = textWrapper.innerText;
+var snipSize = 25;
+var fullText = "I've got.... lots   ---  I'm talkin' lots of..... 'bad' break-points "
+
+if (fullText.length > snipSize) {
+	
+	var findBreak = function(text, size) {
+		var breakLetters = text.slice(size, size + 2);
+		var re = /\w\s|\w(\.|\)|,|'|")\s/;
+		if ( !re.test(breakLetters) ) {
+			size--;
+			findBreak(text, size);
+		} else {
+			snipSize = size + 1;
+		}
+	}
+	
+	var segments = {
+        snippet: fullText.slice(0, snipSize),
+        ellipsis: "...",
+        cutSection: fullText.slice(snipSize, -1)
+    };
+
+    var n;
+    for (n in segments) {
+        var chunk = document.createElement("span");
+        chunk.className = n;
+        chunk.innerText = segments[n];
+        textWrapper.appendChild(chunk);
+    };
+
+    var toggleDisplay = function(e) {
+		console.log(e);
+		var args; var ele;
+		if (arguments[0].type == 'click') {
+			arguments[0].preventDefault();
+			args = toggleDefaults;
+		} else {
+			args = arguments;
+		}
+		console.log(args)
+		for (i=0;i<args.length;i++){
+			ele = document.querySelector(args[i])
+			if (ele.style.display == 'none') {
+				ele.style.display = 'inline';
+			} else {
+				ele.style.display = 'none';
+			}
+		}
+    };
+        
+    var createLink = function(e) {
+		console.log(e);
+		for (i=0;i<arguments.length;i++){
+			var link = document.createElement("a");
+			var readX = 'read' + arguments[i];
+			link.href = "#";
+			link.className = readX;
+			link.innerText = "Read " + arguments[i];
+			textWrapper.appendChild(link);
+			link.addEventListener('click', toggleDisplay, false);
+		}		
+    };
+
+	findBreak(fullText, snipSize);
+	textWrapper.innerText = "";
+    createLink('more', 'less');
+    toggleDisplay('.readless');
+
+
+}
+</script>
+</html>
