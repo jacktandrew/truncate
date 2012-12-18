@@ -76,25 +76,27 @@
     }
   }
 
-  function createLink(quantity, wrapper) {
-    var link = document.createElement("a");
-    link['href'] = "#";
-    link.className = 'read' + quantity;
-    link.innerText = "Read " + quantity;
-    wrapper.appendChild(link);
-    link.addEventListener('click', toggleDisplay, false);
-  }
+    var createLink = function() {
+    	for (i=0;i<arguments.length;i++){
+	  		var link = document.createElement("a");
+		  	var readX = 'read' + arguments[i];
+			  link.href = "#";
+  			link.className = readX;
+	  		link.innerText = "Read " + arguments[i];
+		  	textWrapper.appendChild(link);
+			  link.addEventListener('click', toggleDisplay, false);
+  		}		
+    };
   
-  function toggleDisplay(){
-    var args, ele;
-    if(arguments.type == 'click') {
-      arguments.preventDefault();
-      args = argDefaults;
-    } else {
-      args = arguments;
-    }
+  function toggleDisplay(events){
+    var args;
+	  if (arguments[0].type == 'click') {
+	  	arguments[0].preventDefault();
+	  	args = toggleDefaults;
+	  } else {
+	  	args = arguments;
+  	}
 
-    console.log(args)
     for (i = 0; i < args.length; i++) {
       ele = document.querySelector(args[i])
       if (ele.style.display == 'none') {
@@ -108,8 +110,7 @@
   var truncList = document.querySelectorAll('.truncateMe');
   for (i=0; i < truncList.length; i++) {
     truncateMe(truncList[i]);
-    createLink('more', truncList[i]);
-    createLink('less', truncList[i]);
+    createLink('more', 'less');
   }
   
   var argDefaults = ['.readless','.readmore']
