@@ -4,7 +4,7 @@
     a {float: right; margin: 10px; color: grey; text-decoration: none; }
     .theHouse {height: 120px;}
     .preamble {height: 80px;}
-    div { border: 1px solid black; line-height: 20px; padding: 10px; margin: 20px;}
+    .truncateMe { border: 1px solid black; line-height: 20px; padding: 10px; margin: 20px;}
   </style>
 </head>
 <body>
@@ -25,7 +25,9 @@
 
     The House of Representatives shall be composed of Members chosen every second Year by the People of the several States, and the Electors in each State shall have the Qualifications requisite for Electors of the most numerous Branch of the State Legislature.
 
-    No Person shall be a Representative who shall not have attained to the Age of twenty five Years, and been seven Years a Citizen of the United States, and who shall not, when elected, be an Inhabitant of that State in which he shall be chosen.
+    No Person shall be a Representative who shall not have attained to the Age of twenty five Years, and been seven Years 
+	
+	a Citizen of the "United States", and &nbsp; &nbsp; who --- shall :) not, when &nbsp;&nbsp; elected, be an Inhabitant of that State in which he shall be chosen.
 
     (Representatives and direct Taxes shall be apportioned among the several States which may be included within this Union, according to their respective Numbers, which shall be determined by adding to the whole Number of free Persons, including those bound to Service for a Term of Years, and excluding Indians not taxed, three fifths of all other Persons.) (The previous sentence in parentheses was modified by the 14th Amendment, section 2.) The actual Enumeration shall be made within three Years after the first Meeting of the Congress of the United States, and within every subsequent Term of ten Years, in such Manner as they shall by Law direct. The Number of Representatives shall not exceed one for every thirty Thousand, but each State shall have at Least one Representative; and until such enumeration shall be made, the State of New Hampshire shall be entitled to chuse three, Massachusetts eight, Rhode Island and Providence Plantations one, Connecticut five, New York six, New Jersey four, Pennsylvania eight, Delaware one, Maryland six, Virginia ten, North Carolina five, South Carolina five and Georgia three.
 
@@ -59,63 +61,67 @@
     var intendedHeight = el.clientHeight;
     var actualHeight = el.scrollHeight;
     if (actualHeight > intendedHeight) {
-      var approxBreak = intendedHeight / actualHeight * fullText.length;
-      el.innerText = fullText.slice(0, approxBreak);
-      var lastWords = fullText.slice(approxBreak - 150, approxBreak).split(' ');
-      var wordLengths = lastWords.map( function(word) { return word.length } );
-      findBreak()
+	  var newGuess, actualBreak;
+      var firstGuess = Math.floor(intendedHeight / actualHeight * fullText.length);
+      var lastWords = fullText.slice(firstGuess - 200, firstGuess).split(" ");
+      var wordLengths = lastWords.map( function(word) { return word.length + 1 } );
+      findBreak(firstGuess);
+	  var trunText = fullText.slice(0, actualBreak) + '...';
+	  makeDiv(trunText, 'block');
+	  makeDiv(fullText, 'none');
+	  createLink('more', 'block');
+	  createLink('less', 'none');
     }
 
-    function findBreak() {
+	
+    function findBreak(guess) {
       actualHeight = el.scrollHeight;
-      approxBreak = approxBreak - wordLengths.pop() - 1;
       if (actualHeight > intendedHeight) {
-        el.innerText = el.innerText.slice(0, approxBreak);
-        findBreak()
-      }    
+		newGuess = guess - wordLengths.pop();
+		el.innerText = fullText.slice(0, newGuess);
+        findBreak(newGuess)
+      } else {
+		el.innerText = "";
+		actualBreak = guess - wordLengths.pop();
+	  }
     }
-  }
-
-    var createLink = function(wrapper, quantity) {
-  	var link = document.createElement("a");
+	
+	function makeDiv(text, displayState) {
+		var theDiv = document.createElement("div");
+		theDiv.innerText = text;
+		theDiv.className = 'toggle';
+		theDiv.style.display = displayState;
+		el.appendChild(theDiv);
+	}
+	
+	function createLink(quantity, displayState) {
+		var link = document.createElement("a");
 		var readX = 'read' + quantity;
 		link.href = "#";
-		link.className = readX;
+		link.className = 'toggle';
 		link.innerText = "Read " + quantity;
-		wrapper.appendChild(link);
+		link.style.display = displayState;
 		link.addEventListener('click', toggleDisplay, false);
+		el.appendChild(link);
     };
+  }
   
   function toggleDisplay(event){
-//    var args;
-//	if (arguments[0].type == 'click') {
-//		arguments[0].preventDefault();
-//		args = toggleDefaults;
-//	} else {
-//		args = arguments;
- // 	}
-
-	console.log(event.target.parentNode);
- 
- //   for (i = 0; i < args.length; i++) {
-      ele = event.target.parentNode.querySelector(event.)
-      if (ele.style.display == 'none') {
-        ele.style.display = 'inline';
+	els = event.target.parentNode.querySelectorAll('.toggle');
+	event.target.parentNode.style.height = 'auto';
+    for (i = 0; i < els.length; i++) {
+      if (els[i].style.display == 'none') {
+        els[i].style.display = 'block';
       } else {
-        ele.style.display = 'none';
+        els[i].style.display = 'none';
       }
-//    }
+    }
   }
   
   var truncList = document.querySelectorAll('.truncateMe');
   for (i=0; i < truncList.length; i++) {
     truncateMe(truncList[i]);
-    createLink(truncList[i], 'more');
-	createLink(truncList[i], 'less');
   }
-  
-//  var toggleDefaults = ['.readless','.readmore']
-//  toggleDisplay('.readless')
 
 // }
 
